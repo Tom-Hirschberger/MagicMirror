@@ -25,7 +25,7 @@ var config = {
 	timeFormat: 24,
 	units: "metric",
 	// serverOnly:  true/false/"local" ,
-			     // local for armv6l processors, default 
+			     // local for armv6l processors, default
 			     //   starts serveronly and then starts chrome browser
 			     // false, default for all  NON-armv6l devices
 			     // true, force serveronly mode, because you want to.. no UI on this device
@@ -36,139 +36,340 @@ var config = {
 		},
 		{
 			module: "clock",
-			position: "top_left"
+			position: "top_left",
+			classes: "pageOneEveryone pageOneTom pageTwoEveryone pageTwoTom"
 		},
 		{
-			module: 'MMM-ViewNotifications',
-			position: 'bottom_left',
-			header: 'Notifications',
+			module: "MMM-DWD-Pollen",
+			position: "bottom_right",
+			header: "Pollenwarnung",
 			config: {
-				timeout: 0,
-				format: '{time}: "{module}" sent "{notification}" with {payloadData}', // See below for configurable options
-				excludeModules: ["clock"]
-			}
-		},
-		{ 
-			module: 'MMM-GPIO-Notifications',
-			config: {
-			  '17': {
-				gpio_state: 1, 
-				gpio_debounce: 0,
-				notifications: [
-				  { 
-					notification: 'USER_PRESENCE',
-					payload: true
-				  },
-				  { 
-					notification: 'SCREEN_ON', 
-					payload: { 'forced': false }
-				  }
-				]
-			  }
-			}
-		},
-		{                   
-			module: 'MMM-Screen-Powersave-Notification',
-			config: {                 
-			  delay: 3200
-			}
+				updateInterval: 1 * 60 * 60 * 1000, // every 1 hour1
+				DWD_region: 121, // Rhein Main
+				icon: true // Show icons or not
+			},
+			classes: "pageOneEveryone pageOneTom"
 		},
 		{
-			module: 'MMM-Serial-Notifications',
+			module: "MMM-NOAA3",
+			position: "top_right",
+   			config: {
+       			provider: "openweather", // From list above
+      			apiKey: "e782f6f4b335b6eb9be6d381f0f32fdf", // From one of the providers listed above
+       			airKey: "cda20bb9-fa31-499b-80be-c33cf1da088e",
+       			css: "NOAA3", // THIS MUST CONTAIN A CSS STYLE NAME
+   				userlat: "47.874074", //MUST HAVE BOTH
+       			userlon: "11.465156", //MUST HAVE BOTH
+			},
+			classes: "pageOneEveryone pageOneTom"
+		},
+		{
+			module: "MMM-Spotify",
+			position: "top_center",
 			config: {
-				devices: {
-					'/dev/ard_mega': {
-						messages: {
-							'In_Distance (1)': [
-								{
-									notification: 'SCREEN_TOGGLE',
-									payload: {
-										forced: true
-									}
-								},
-								{
-									notification: 'USER_PRESENCE',
-									payload: true
-								}
-							],
-							'In_Distance (2)': [
-								{
-									notification: 'VOLUME_TOGGLE',
-									payload: {
-										faded: true,
-										upDownScale: 8
-									}
-								},
-								{
-									notification: 'USER_PRESENCE',
-									payload: true
-								}
-							],
-						}
+			  style: "default", // "default" or "mini" available
+			  control: "default", //"default", "hidden" available
+			  updateInterval: 2000,
+			  onStart: null, // disable onStart feature with `null`
+			},
+			classes: "pageTwoEveryone"
+		},
+		{
+			module: "MMM-CalendarExt2",
+			config: {
+				calendars : [
+					{
+						name: "c_hirschhubers",
+						className: "c_hirschhubers",
+						url: "https://calendar.google.com/calendar/ical/hirschhubers%40gmail.com/private-79c4d0ea4d543f4868c34addd5990f69/basic.ics",
 					},
-					'/dev/ard_uno': {
-						messages: {
-							'Gesture: UP': [
-								{
-									notification: 'VOLUME_UP',
-									payload: {
-										upDownScale: 5
-									}
-								},
-								{
-									notification: 'USER_PRESENCE',
-									payload: true
-								}
-							],
-							'Gesture: DOWN': [
-								{
-									notification: 'VOLUME_DOWN',
-									payload: {
-										upDownScale: 8
-									}
-								},
-								{
-									notification: 'USER_PRESENCE',
-									payload: true
-								}
-							]
-						}
+					{
+						name: "c_tom",
+						className: "c_tom",
+						url: "https://calendar.google.com/calendar/ical/wishmaster270%40gmail.com/private-998b105b96a8744b07ea07280e14477d/basic.ics",
+					},
+			  	],
+				views: [
+					{
+						name: "v_upcoming_hirschhubers",
+						mode: "upcoming",
+						hideOverflow: false,
+						maxItems: 15,
+						useEventTimeRelative: false,
+						positionOrder: 2,
+						position: "top_center",
+						calendars: ["c_hirschhubers"],
+					},
+					{
+						name: "v_upcoming_both",
+						mode: "upcoming",
+						hideOverflow: false,
+						maxItems: 15,
+						useEventTimeRelative: false,
+						positionOrder: 2,
+						position: "top_center",
+						calendars: ["c_hirschhubers", "c_tom"],
+					},
+					{
+						name: "v_month_hirschhubers",
+						mode: "month",
+						hideOverflow: false,
+						slotMaxHeight: "130px",
+						slotCount: 5,
+						position: "top_bar",
+						calendars: ["c_hirschhubers"],
+					},
+					{
+						name: "v_month_both",
+						mode: "month",
+						hideOverflow: false,
+						slotMaxHeight: "130px",
+						slotCount: 5,
+						position: "top_bar",
+						calendars: ["c_hirschhubers", "c_tom"],
+					},
+			  	],
+			  	scenes: [
+					{
+						name: "pageOneEveryone",
+						views: ["v_upcoming_hirschhubers"],
+					},
+					{
+						name: "pageOneTom",
+						views: ["v_upcoming_both"],
+					},
+					{
+						name: "pageThreeEveryone",
+						views: ["v_month_hirschhubers"],
+					},
+					{
+						name: "pageThreeTom",
+						views: ["v_month_both"],
+					},
+				],
+				notifications: {
+					"CHANGED_PROFILE" : {
+					  exec: "changeSceneByName",
+					  payload: (payload) => {return payload.to}
 					}
-				}
-			}
+				},
+			},
+			classes: "pageOneEveryone pageOneTom pageThreeEveryone pageThreeTom"
 		},
 		{
 			module: "MMM-Volume",
 			position: "top_left", // It is meaningless. but you should set.
 			config: {
 			  usePresetScript: "HIFIBERRY-DAC",
-			  // When set to `null`, `getVolumeScript` and `setVolumeScript` will be used directly. See the experts section.
-			  // For available presetScript, See `presetScript{}`
-		  
-			  upDownScale: 5,
-			  // for VOLUME_UP or VOLUME_DOWN.
-		  
-			  volumeOnStart: 10,
-			  // If you set this, this volume will be applied on start of MagicMirror
-		  
-			  volumeText: "Vol: #VOLUME#%",
-			  // Showing volume.
-		  
-			  hideDelay: 2000,
-			  // After X milliseconds from showing, volume gain-meter will be disappeared.
-		  
-			  fadeDelay: 200,
-			  // If the volume is restored with a fade effect this time in milliseconds will be waited between to scales
-			  // volume control scripts for Other systems. If you set null to `usePresetScript`, these fields will be used instead.
-		  
-			   presetScript: {
-				"HIFIBERRY-DAC": {
-				  getVolumeScript: `amixer sget 'Digital' | grep -E -o '[[:digit:]]+%' | head -n 1| sed 's/%//g'`, // get 0~100
-				  setVolumeScript: `amixer sset -M 'Digital' #VOLUME#%`, // set 0~100
-				},
-			  },
+			  volumeOnStart: null,
 			}
-		  },
+		},
+		{
+			module: "MMM-ViewNotifications",
+			position: "bottom_bar",
+			header: "Notifications",
+			config: {
+				timeout: 0,
+				format: "{time}: \"{module}\" sent \"{notification}\" with {payloadData}", // See below for configurable options
+				includeModules: ["MMM-CalendarExt2"]
+			},
+			classes: "pageTwoTom",
+		},
+		{
+			module: "MMM-Screen-Powersave-Notification",
+			config: {
+			  delay: 300
+			}
+		},
+		{
+			module: "MMM-GPIO-Notifications",
+			config: {
+			  "23": {
+					gpio_state: 1,
+					delay: 5000,
+					gpio_debounce: 100,
+					notifications: [
+				  {
+							notification: "USER_PRESENCE",
+							payload: true
+				  },
+				  {
+							notification: "SCREEN_ON",
+							payload: { "forced": false }
+				  }
+					]
+			  },
+			  "24": {
+					gpio_state: 1,
+					delay: 5000,
+					gpio_debounce: 100,
+					notifications: [
+				  {
+							notification: "USER_PRESENCE",
+							payload: true
+				  },
+				  {
+							notification: "SCREEN_ON",
+							payload: { "forced": false }
+				  }
+					]
+			  },
+			  "25": {
+					gpio_state: 1,
+					delay: 5000,
+					gpio_debounce: 100,
+					notifications: [
+				  {
+							notification: "USER_PRESENCE",
+							payload: true
+				  },
+				  {
+							notification: "SCREEN_ON",
+							payload: { "forced": false }
+				  }
+					]
+			  }
+			},
+		},
+		{
+			module: "MMM-Serial-Notifications",
+			config: {
+				devices: {
+					"/dev/ard_nano_1": {
+						//APDS-9960 and three VL53L1X
+						//Gesture: UP
+						//VL53L1X0: HIT
+						//AmbientLight: 1234
+						messages: {
+							"Gesture: LEFT": [
+								{
+									notification: "PROFILE_DECREMENT_HORIZONTAL",
+								}
+							],
+							"Gesture: RIGHT": [
+								{
+									notification: "PROFILE_INCREMENT_HORIZONTAL",
+								}
+							],
+							"Gesture: UP": [
+								{
+									notification: "PROFILE_DECREMENT_VERTICAL",
+								}
+							],
+							"Gesture: DOWN": [
+								{
+									notification: "PROFILE_INCREMENT_VERTICAL",
+								}
+							],
+							"VL53L1X2": [
+								{
+									notification: "SCREEN_TOGGLE",
+									payload: { forced: true },
+								}
+							],
+						}
+					},
+					"/dev/ard_nano_2": {
+						//APDS-9960 and five VL53L0X
+						//Gesture: UP
+						//VL53L0X0: HIT
+						//AmbientLight: 1234
+						messages: {
+							"Gesture: LEFT": [
+								{
+									notification: "VOLUME_UP",
+									payload: {
+										upDownScale: 5
+									}
+								},
+								{
+									notification: "USER_PRESENCE",
+									payload: true
+								}
+							],
+							"Gesture: RIGHT": [
+								{
+									notification: "VOLUME_DOWN",
+									payload: {
+										upDownScale: 8,
+									}
+								},
+								{
+									notification: "USER_PRESENCE",
+									payload: true,
+								},
+							],
+							"Gesture: UP": [
+								{
+									notification: "VOLUME_TOGGLE",
+									payload: {
+										faded: true,
+									},
+								},
+							],
+							"Gesture: DOWN": [
+								{
+									notification: "VOLUME_TOGGLE",
+									payload: {
+										faded: false,
+									},
+								},
+							],
+							"VL53L0X0": [
+								{
+									notification: "SPOTIFY_PREVIOUS",
+								}
+							],
+							"VL53L0X1": [
+								{
+									notification: "SPOTIFY_TOGGLE",
+								}
+							],
+							"VL53L0X2": [
+								{
+									notification: "SPOTIFY_NEXT",
+								}
+							],
+							"VL53L0X3": [
+								{
+									notification: "SPOTIFY_SHUFFLE",
+								}
+							],
+							"VL53L0X4": [
+								{
+									notification: "SPOTIFY_REPEAT",
+								}
+							],
+						}
+					},
+				}
+			}
+		},
+		{
+			module: "MMM-ProfileControl",
+			position: "bottom_bar",
+			config: {
+				profiles: [
+					["pageOneEveryone", "pageOneTom"],
+					["pageTwoEveryone", "pageTwoTom"],
+					["pageThreeEveryone", "pageThreeTom"],
+				],
+			}
+		},
+		{
+			module: "MMM-ProfileSwitcher",
+			config: {
+				defaultClass: "pageOneEveryone",
+				ignoreModules: [
+					"MMM-Remote-Control",
+					"MMM-Screen-Powersave-Notification",
+					"MMM-GPIO-Notifications",
+					"MMM-Serial-Notifications",
+					"MMM-Volume",
+					"MMM-ProfileControl"
+				],
+			}
+		},
 	]
 };
 
